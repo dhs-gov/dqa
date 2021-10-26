@@ -1,0 +1,9 @@
+#docx2python
+torch
+sentencepiece
+#adaptnlp
+python-docx
+#keybert
+transformers
+protobuf
+configparser
