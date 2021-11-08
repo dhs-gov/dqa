@@ -8,14 +8,15 @@ pip install dqa
 ```
 
 ## Quick Start
-Open file ```example.py``` and change ```file_path``` to point to your 
+Open file ```config.ini ``` and set the following parameters: ```LOG_FILE_PATH ``` and 
+ ```OUTPUT_DIR ``` for your environment. Next, open file ```example.py``` and change ```file_path``` to point to your 
 (context) document. Note that this version currently only supports ```.docx``` files. 
 
-If you want to use predefined questions, set ```questions``` to list of questions:
+If you want to pose predefined questions, set ```questions``` in ```config.ini ``` to your list of questions:
 ```
 questions = ['What is the subject?', 'Who bought the food?']
 ```
-If you want to pose questions interactively, set ```questions``` to None:
+If you want to pose questions interactively, set ```questions``` in ```config.ini ``` to None:
 ```
 questions = None
 ```
