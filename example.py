@@ -27,7 +27,6 @@ done = False
 start_all = time.time()
 
 if questions:
-    print("Questions hardcoded (AUTO).\n")
     for i, question in enumerate(questions):
         print(f"Question {i}: {question}")
         start = time.time()
