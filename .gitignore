@@ -1,4 +1,4 @@
 /.venv
-/data_test.docx
-/notes.txt
-/test.py
+*data_test.docx
+*notes.txt
+*test.py
