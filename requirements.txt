@@ -2,8 +2,10 @@
 torch
 sentencepiece
 #adaptnlp
-python-docx
+#python-docx
+docx2txt
 #keybert
 transformers
 protobuf
 configparser
+nltk
