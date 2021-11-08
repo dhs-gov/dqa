@@ -27,16 +27,21 @@ done = False
 start_all = time.time()
 
 if questions:
+    print("Questions hardcoded (AUTO).\n")
     for i, question in enumerate(questions):
         print(f"Question {i}: {question}")
         start = time.time()
         results = dqa.get_answers(question, search_all=dqa.SEARCH_ALL)
         #print("***\n ")
-        for result in results:
-            chunk_ind = result.chunk_ref
-            if dqa.SHOW_REFS == 'True':
-                print(f"REF {chunk_ind}: {dqa.get_chunk(chunk_ind)}\n")
-            print(f" - {result.model}: (ref: {result.chunk_ref}) {result.answer} (confidence: {result.score} )")
+        if not results:
+            print(f"No model could determine answer with confidence >= {dqa.MIN_ACCEPTABLE_CONF_SCORE}")
+        else:
+            for result in results:
+                chunk_ind = result.chunk_ref
+                if dqa.SHOW_REFS == 'True':
+                    print(f"REF {chunk_ind}: {dqa.get_chunk(chunk_ind)}\n")
+                print(f" - {result.model}: (ref: {result.chunk_ref}) {result.answer} (confidence: {result.score} )")
+            
         # Show elapsed
         end = time.time()
         elapsed = end - start
@@ -50,12 +55,16 @@ else:
             break
         start = time.time()
         results = dqa.get_answers(question, search_all=dqa.SEARCH_ALL)
-        #print("***\n ")
-        for result in results:
-            chunk_ind = result.chunk_ref
-            if dqa.SHOW_REFS == 'True':
-                print(f"REF {chunk_ind}: {dqa.get_chunk(chunk_ind)}\n")
-            print(f" - {result.model}: (ref: {result.chunk_ref}) {result.answer} (confidence: {result.score} )")
+        if not results:
+            print(f"No model could determine answer with confidence >= {dqa.MIN_ACCEPTABLE_CONF_SCORE}")
+        else:
+            #print("***\n ")
+            for result in results:
+                chunk_ind = result.chunk_ref
+                if dqa.SHOW_REFS == 'True':
+                    print(f"REF {chunk_ind}: {dqa.get_chunk(chunk_ind)}\n")
+                print(f" - {result.model}: (ref: {result.chunk_ref}) {result.answer} (confidence: {result.score} )")
+            
         # Show elapsed
         end = time.time()
         elapsed = end - start
@@ -66,4 +75,3 @@ end = time.time()
 elapsed_total = end - start_all
 elapsed_total_str = time.strftime('%Hh:%Mm:%Ss', time.gmtime(elapsed_total))
 print(f"END. Total elapsed: {elapsed_total_str}\n")
-    
