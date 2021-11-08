@@ -1,10 +1,6 @@
-#docx2python
 torch
 sentencepiece
-#adaptnlp
-#python-docx
 docx2txt
-#keybert
 transformers
 protobuf
 configparser

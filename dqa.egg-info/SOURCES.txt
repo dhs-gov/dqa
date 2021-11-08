@@ -1,0 +1,6 @@
+dqa_pip
+setup.py
+dqa.egg-info/PKG-INFO
+dqa.egg-info/SOURCES.txt
+dqa.egg-info/dependency_links.txt
+dqa.egg-info/top_level.txt

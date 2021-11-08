@@ -1,0 +1,23 @@
+Metadata-Version: 2.1
+Name: dqa
+Version: 0.1
+Summary: QA system
+Home-page: https://github.com/dhs-gov/dqa
+Author: Stephen Quirolgico
+Author-email: stephen.quirolgico@gmail.com
+License: UNKNOWN
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: Public Domain
+Classifier: Operating System :: OS Independent
+Classifier: Intended Audience :: Science/Research
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Description-Content-Type: text/markdown
+
+# DQA
+
+
+
+[![Python 3.8](https://img.shields.io/badge/python-3.8-blue.svg)](https://www.python.org/downloads/release/python-380/) [![Release](https://img.shields.io/badge/release-v0.1-blue)](https://img.shields.io/badge/release-v0.1-blue)
+
