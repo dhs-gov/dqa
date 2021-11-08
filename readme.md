@@ -1,14 +1,6 @@
 # DQA
 [![Python 3.8](https://img.shields.io/badge/python-3.8-blue.svg)](https://www.python.org/downloads/release/python-380/) [![Release](https://img.shields.io/badge/release-v0.1-blue)](https://img.shields.io/badge/release-v0.1-blue) [![Version](https://img.shields.io/badge/version-alpha-orange)](https://img.shields.io/badge/version-alpha-orange)
 
-
-
-## Installation
-To install with pypi, use:
-```
-pip install dqa
-```
-
 ## Quick Start
 Open file ```config.ini ``` and set the following parameters: ```LOG_FILE_PATH ``` and 
  ```OUTPUT_DIR ``` for your environment. Next, open file ```example.py``` and change ```file_path``` to point to your 
