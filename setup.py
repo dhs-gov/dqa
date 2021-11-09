@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
      name='dqa',  
-     version='0.1',
+     version='0.2',
      scripts=['dqa_pip'] ,
      author="Stephen Quirolgico",
      author_email="stephen.quirolgico@gmail.com",
