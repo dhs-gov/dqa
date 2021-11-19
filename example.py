@@ -1,24 +1,35 @@
 from dqa._dqa import DQA
 import os
 import time
+import ipywidgets as widgets
+from ipywidgets import interact, interact_manual
+
+# Feed document and pose questions to DQA
 
 clear = lambda: os.system('cls')
 clear()
 
-# Create DQA object
 dqa = DQA()
+file_path = '/path/to/context.docx'
 
-# Set to your context document. Note that the system currently only
-# supports .docx documents.
-file_path = '/path/to/mydata.docx'
 
 dqa.load_file(file_path)
+print(f"Loaded file: {file_path}")
+#dqa.load_text("This is an example text. Here is another sentence.")
 
-# If you want to pose questions interactively, set questions to None:
 questions = None # Use None for interactive
+'''
+questions = ['What technology does Mobius use?', \
+    'What level of clearance must users of Mobius have?', \
+    'What is the data retention period?',\
+    'What does the acronym ISSO stand for?',\
+    'What application server does Mobius use?', \
+    'How many servers does Mobius have?']
+'''
 
-# If you want to use predefined questions, set questions:
-#questions = ['What is the subject?', 'Who purchased the food?']
+@interact
+def show_articles_more_than(column='claps', x=5000):
+    return df.loc[df[column] > x]
 
 print("START")
 print("=================================================================")
@@ -31,16 +42,13 @@ if questions:
     for i, question in enumerate(questions):
         print(f"Question {i}: {question}")
         start = time.time()
-        results = dqa.get_answers(question, search_all=dqa.SEARCH_ALL)
+        results = dqa.get_answers(question)
         #print("***\n ")
         if not results:
             print(f"No model could determine answer with confidence >= {dqa.MIN_ACCEPTABLE_CONF_SCORE}")
         else:
             for result in results:
-                chunk_ind = result.chunk_ref
-                if dqa.SHOW_REFS == 'True':
-                    print(f"REF {chunk_ind}: {dqa.get_chunk(chunk_ind)}\n")
-                print(f" - {result.model}: (ref: {result.chunk_ref}) {result.answer} (confidence: {result.score} )")
+                print(f" - {result.model}: (ref: {result.answer} (confidence: {result.score} )")
             
         # Show elapsed
         end = time.time()
@@ -54,16 +62,13 @@ else:
         if question == None or question == 'exit':
             break
         start = time.time()
-        results = dqa.get_answers(question, search_all=dqa.SEARCH_ALL)
+        results = dqa.get_answers(question)
         if not results:
             print(f"No model could determine answer with confidence >= {dqa.MIN_ACCEPTABLE_CONF_SCORE}")
         else:
             #print("***\n ")
             for result in results:
-                chunk_ind = result.chunk_ref
-                if dqa.SHOW_REFS == 'True':
-                    print(f"REF {chunk_ind}: {dqa.get_chunk(chunk_ind)}\n")
-                print(f" - {result.model}: (ref: {result.chunk_ref}) {result.answer} (confidence: {result.score} )")
+                print(f" - {result.model}: {result.answer} (confidence: {result.score} )")
             
         # Show elapsed
         end = time.time()
@@ -75,3 +80,4 @@ end = time.time()
 elapsed_total = end - start_all
 elapsed_total_str = time.strftime('%Hh:%Mm:%Ss', time.gmtime(elapsed_total))
 print(f"END. Total elapsed: {elapsed_total_str}\n")
+    

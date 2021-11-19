@@ -3,7 +3,6 @@ from util import text_util
 import configparser
 from transformers import pipeline
 import os
-#from docx import Document
 import docx2txt
 import logging
 import warnings
@@ -27,17 +26,14 @@ model_5 = pipeline("question-answering", model="distilbert-base-uncased-distille
 
 class DQA():
 
-    # User execution name
-    annotation = None
     # User configurations
     config = None
-    # User corpus
-    docs = []
-    # User stop words
-    stop_words = []
 
-    # List of corpus chunks
-    context_chunks = []
+    # Pipelines list
+    pipelines = []
+
+    # Context
+    context = ""
 
     # The minimum confidence score needed to ignore all answers.
     MIN_CONF_SCORE = 1e-2
@@ -47,12 +43,6 @@ class DQA():
 
     # The minimum confidence score needed to accept as correct answer.
     MIN_ACCEPTABLE_CONF_SCORE = 0.7
-
-    # Search entire doc for answer. If False, program returns when first answer found.
-    SEARCH_ALL = True
-
-    # Show referenced text for each answer
-    SHOW_REFS = False
 
 
     def __init__(self):
@@ -68,50 +58,23 @@ class DQA():
         self.MIN_ACCEPTABLE_CONF_SCORE = self.config['THRESHOLDS']['MIN_ACCEPTABLE_CONF_SCORE']
         print(f"MIN_ACCEPTABLE_CONF_SCORE: {self.MIN_ACCEPTABLE_CONF_SCORE}")
 
-        self.SEARCH_ALL = self.config['SEARCH']['SEARCH_ALL']
-        print(f"SEARCH_ALL: {self.SEARCH_ALL}")
-
-        self.SHOW_REFS = self.config['SEARCH']['SHOW_REFS']
-        print(f"SHOW_REFS: {self.SHOW_REFS}")
-
         # Initialize logger
         log_util.set_logging(self.config)
         # Turn off transformer/numpy warnings
         #log_util.disable_logging()
 
 
-
-    def get_chunk(self, ind):
-        return self.context_chunks[ind]
-
-
     def load_file(self, file_path):
         print("Loading file")
         file_ext = os.path.splitext(file_path)[1]
         if file_ext.lower() == '.docx':
-            text = docx2txt.process(file_path)
-            #print(f"text: {text}")
-            #self.context_chunks = text_util.get_chunks(text)
-            self.context_chunks.append(text)
-            #for i, chunk in enumerate(self.context_chunks):
-            #    print(f"CHUNK {i}: {chunk}")
+            self.context = docx2txt.process(file_path)
         elif file_ext.lower() == '.txt':
-            text = ""
             with open(file_path) as f:
-                text = f.readlines()
-            self.context_chunks = text_util.get_chunks(text)
+                self.context = self.context + f.readlines()
 
 
-    def load_text(self, text):
-        self.context_chunks = text_util.get_chunks(text)
-        #for i, chunk in enumerate(self.context_chunks):
-        #    print(f"CHUNK {i}: {chunk}")
-
-    def ask(self, question):
-        print("ask")
-
-
-    def determine_correctness(self, model_name, chunk_ind, result, answers):
+    def determine_correctness(self, model_name, result, answers):
 
         if not result:
             print("Model is None")
@@ -129,7 +92,7 @@ class DQA():
                 if conf > float(self.MIN_ACCEPTABLE_CONF_SCORE):
                     answer = result.get("answer")
                     if not any(answer == x.answer for x in answers):
-                        return Result(model_name, chunk_ind, result.get("answer"), conf), conf
+                        return Result(model_name, result.get("answer"), conf), conf
                     else:
                         #r = Result('model_0', '-----------------', max_false_positive)
                         return None, None
@@ -138,103 +101,84 @@ class DQA():
                 #r.print()
 
 
-    def get_answers(self, question, search_all):
+    def get_answers(self, question):
         answers = []
         max_false_positive = 0.00000000000000000001
         num_low_conf_scores = 0
-        len_chunks = len(self.context_chunks)
+
+        model_result = model_0(question=question, context=self.context)
+        result0, score0 = self.determine_correctness('model_0', model_result, answers)
+
+        if result0 == None and score0:
+            num_low_conf_scores+=1
+
+        model_result = model_1(question=question, context=self.context)
+        result1, score1 = self.determine_correctness('model_1', model_result, answers)
+        if result1 == None and score1:
+            num_low_conf_scores+=1
+
+        model_result = model_2(question=question, context=self.context)
+        result2, score2 = self.determine_correctness('model_2', model_result, answers)
+        if result2 == None and score2:
+            num_low_conf_scores+=1
+
+        model_result = model_3(question=question, context=self.context)
+        result3, score3 = self.determine_correctness('model_3', model_result, answers)
+        if result3 == None and score3:
+            num_low_conf_scores+=1
+
+        model_result = model_4(question=question, context=self.context)
+        result4, score4 = self.determine_correctness('model_4', model_result, answers)
+        if result4 == None and score4:
+            num_low_conf_scores+=1
+
+        model_result = model_5(question=question, context=self.context)
+        result5, score5 = self.determine_correctness('model_5', model_result, answers)
+        if result5 == None and score5:
+            num_low_conf_scores+=1
+
+        #print(f"NUM LOW SCORES: {num_low_conf_scores}")
+        if num_low_conf_scores < 2:
+            if result0:
+                answers.append(result0)
+                #result0.print()
+            if result1:
+                answers.append(result1)
+                #result1.print()
+            if result2:
+                answers.append(result2)
+                #result2.print()
+
+            if result3:
+                answers.append(result3)
+                #result3.print()
+
+            if result4:
+                answers.append(result4)
+                #result4.print()
+
+            if result5:
+                answers.append(result5)
+                #result5.print()
+
+        num_low_conf_scores = 0
         
-        #print(f"LEN CHUNKS: {len_chunks}")
-        for i, chunk in enumerate(self.context_chunks):
-            if chunk:
-                #print(f"Examining chunk {i} of {len_chunks-1}", end = "\r")
-
-                model_result = model_0(question=question, context=chunk)
-                result0, score0 = self.determine_correctness('model_0', i, model_result, answers)
-
-                if result0 == None and score0:
-                    num_low_conf_scores+=1
-
-                model_result = model_1(question=question, context=chunk)
-                result1, score1 = self.determine_correctness('model_1', i, model_result, answers)
-                if result1 == None and score1:
-                    num_low_conf_scores+=1
-
-                model_result = model_2(question=question, context=chunk)
-                result2, score2 = self.determine_correctness('model_2', i, model_result, answers)
-                if result2 == None and score2:
-                    num_low_conf_scores+=1
-
-                model_result = model_3(question=question, context=chunk)
-                result3, score3 = self.determine_correctness('model_3', i, model_result, answers)
-                if result3 == None and score3:
-                    num_low_conf_scores+=1
-
-                model_result = model_4(question=question, context=chunk)
-                result4, score4 = self.determine_correctness('model_4', i, model_result, answers)
-                if result4 == None and score4:
-                    num_low_conf_scores+=1
-
-                model_result = model_5(question=question, context=chunk)
-                result5, score5 = self.determine_correctness('model_5', i, model_result, answers)
-                if result5 == None and score5:
-                    num_low_conf_scores+=1
-
-                #print(f"NUM LOW SCORES: {num_low_conf_scores}")
-                if num_low_conf_scores < 2:
-                    if result0:
-                        answers.append(result0)
-                        #result0.print()
-                    if result1:
-                        answers.append(result1)
-                        #result1.print()
-                    if result2:
-                        answers.append(result2)
-                        #result2.print()
-
-                    if result3:
-                        answers.append(result3)
-                        #result3.print()
-
-                    if result4:
-                        answers.append(result4)
-                        #result4.print()
-
-                    if result5:
-                        answers.append(result5)
-                        #result5.print()
-
-
-                    # If user does  not want to check entire document, return now
-                    if search_all=='False' and answers:
-                        print("search_all=False, breaking.")
-                        return answers
-                    
-
-                num_low_conf_scores = 0
-                
-                #print("---------------------")
+        #print("---------------------")
 
         # To return a new list, use the sorted() built-in function...
         answers.sort(key=lambda x: x.score, reverse=True)
         return answers
 
-
-
-
-
 class Result:
 
     model = None
-    chunk_ref = None
     answer = None
     score = 0.00000000000000000001
 
-    def __init__(self, model, chunk_ref, answer, score):
+    def __init__(self, model, answer, score):
         self.model = model
-        self.chunk_ref = chunk_ref
         self.answer = answer
         self.score = score
 
     def print(self):
-        print(f"  - {self.model}: (ref: {self.chunk_ref}) {self.answer} (confidence: {self.score} )")
+        print(f"  - {self.model}: {self.answer} (confidence: {self.score} )")
