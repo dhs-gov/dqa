@@ -91,7 +91,8 @@ class DQA():
         if file_ext.lower() == '.docx':
             text = docx2txt.process(file_path)
             #print(f"text: {text}")
-            self.context_chunks = text_util.get_chunks(text)
+            #self.context_chunks = text_util.get_chunks(text)
+            self.context_chunks.append(text)
             #for i, chunk in enumerate(self.context_chunks):
             #    print(f"CHUNK {i}: {chunk}")
         elif file_ext.lower() == '.txt':
