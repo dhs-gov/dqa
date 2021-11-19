@@ -1,8 +1,6 @@
 from dqa._dqa import DQA
 import os
 import time
-import ipywidgets as widgets
-from ipywidgets import interact, interact_manual
 
 # Feed document and pose questions to DQA
 
@@ -26,10 +24,6 @@ questions = ['What technology does Mobius use?', \
     'What application server does Mobius use?', \
     'How many servers does Mobius have?']
 '''
-
-@interact
-def show_articles_more_than(column='claps', x=5000):
-    return df.loc[df[column] > x]
 
 print("START")
 print("=================================================================")
